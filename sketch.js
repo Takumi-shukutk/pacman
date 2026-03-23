@@ -171,7 +171,17 @@ function initGame() {
 }
 
 // マップを表示する (02)
-function drawMap() {}
+function drawMap() {
+    noStroke();
+    for (let r = 0; r < map.length; r++) {
+        for (let c = 0; c < map[r].length; c++) {
+            if (map[r][c] == 1) {
+                fill(0, 0, 180);
+                rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+            }
+        }
+    }
+}
 
 // ドットを表示する (03)
 function drawDots() {}
