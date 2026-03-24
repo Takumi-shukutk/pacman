@@ -1,316 +1,350 @@
-// --- 変数の宣言 ---
-let mode = 0; // 0: スタート, 1: プレイ中, 2: ゲームオーバー, 3: クリア
-let CELL_SIZE = 40; // 1マスのピクセルサイズ
+    // --- 変数の宣言 ---
+    let mode = 0; // 0: スタート, 1: プレイ中, 2: ゲームオーバー, 3: クリア
+    let CELL_SIZE = 60; // 1マスのピクセルサイズ
 
-// マップの2次元配列: 1=壁, 0=通路（ドットあり）
-let map = [
-    [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-    [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-];
+    // マップの2次元配列: 1=壁, 0=通路（ドットあり）
+    let map = [
+        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+    ];
 
-let pacman;
-let ghosts = [];
-let dots = []; // 2次元配列: dots[行][列] = true でドットあり
-let score;
+    let pacman;
+    let ghosts = [];
+    let dots = []; // 2次元配列: dots[行][列] = true でドットあり
+    let score;
 
-// --- 初期化 ---
-function setup() {
-    createCanvas(600, 600);
-    angleMode(DEGREES);
-    initGame();
-}
-
-// --- メインループ ---
-function draw() {
-    background(0);
-    if (mode == 0) {
-        showStartScreen();
-    } else if (mode == 1) {
-        playGame();
-    } else if (mode == 2) {
-        showGameOver();
-    } else if (mode == 3) {
-        showClearScreen();
-    }
-}
-
-// --- キー操作 ---
-function keyPressed() {
-    if (mode == 0 && key == " ") {
+    // --- 初期化 ---
+    function setup() {
+        createCanvas(900, 900);
+        angleMode(DEGREES);
         initGame();
-        mode = 1;
-    } else if (mode == 1) {
-        changeDirection();
-    } else if (mode == 2 && key == " ") {
-        mode = 0;
-    } else if (mode == 3 && key == " ") {
-        mode = 0;
     }
-}
 
-// --- 画面表示 ---
-function showStartScreen() {
-    drawMap();
-    drawDots();
-    drawPacman();
-    drawScore();
-    textAlign(CENTER);
-    fill("yellow");
-    textSize(40);
-    text("PAC-MAN", width / 2, height / 2 - 30);
-    fill("white");
-    textSize(18);
-    text("SPACE キーでスタート", width / 2, height / 2 + 20);
-}
-
-function playGame() {
-    updatePacman();
-    updateGhosts();
-    checkEatDots();
-    checkHitGhost();
-    checkClear();
-    drawMap();
-    drawDots();
-    drawPacman();
-    drawGhosts();
-    drawScore();
-}
-
-function showGameOver() {
-    drawMap();
-    drawDots();
-    drawPacman();
-    drawGhosts();
-    drawScore();
-    textAlign(CENTER);
-    fill("red");
-    textSize(40);
-    text("GAME OVER", width / 2, height / 2);
-    fill("white");
-    textSize(18);
-    text("SPACE キーでタイトルへ", width / 2, height / 2 + 50);
-}
-
-function showClearScreen() {
-    drawMap();
-    drawDots();
-    drawPacman();
-    drawScore();
-    textAlign(CENTER);
-    fill("yellow");
-    textSize(40);
-    text("STAGE CLEAR!", width / 2, height / 2);
-    fill("white");
-    textSize(18);
-    text("SPACE キーでタイトルへ", width / 2, height / 2 + 50);
-}
-
-// ゲームを初期化する
-function initGame() {
-    // mapの2次元配列からdotsの2次元配列を生成する
-    dots = [];
-    for (let r = 0; r < map.length; r++) {
-        dots.push([]);
-        for (let c = 0; c < map[r].length; c++) {
-            // 端のトンネルマスにはドットを置かない
-            let isBorder =
-                r == 0 ||
-                r == map.length - 1 ||
-                c == 0 ||
-                c == map[r].length - 1;
-            dots[r].push(map[r][c] == 0 && !isBorder);
+    // --- メインループ,シーンの設定 ---
+    function draw() {
+        background(0);
+        if (mode == 0) {
+            showStartScreen();
+        } else if (mode == 1) {
+            playGame();
+        } else if (mode == 2) {
+            showGameOver();
+        } else if (mode == 3) {
+            showClearScreen();
         }
     }
 
-    pacman = {
-        col: 7,
-        row: 13, // 向かっているマス（列, 行）
-        x: cellX(7),
-        y: cellY(13), // ピクセル位置
-        dir: { x: 1, y: 0 }, // 現在の進行方向
-        nextDir: { x: 1, y: 0 }, // 次に曲がりたい方向
-        speed: 2,
-        mouthAngle: 0,
-        mouthOpen: true,
-    };
+    // --- スペースキー操作 ---
+    function keyPressed() {
+        if (mode == 0 && key == " ") {
+            initGame();
+            mode = 1;
+        } else if (mode == 1) {
+            changeDirection();
+        } else if (mode == 2 && key == " ") {
+            mode = 0;
+        } else if (mode == 3 && key == " ") {
+            mode = 0;
+        }
+    }
 
-    ghosts = [];
-    ghosts.push({
-        col: 1,
-        row: 1,
-        x: cellX(1),
-        y: cellY(1),
-        dir: { x: 1, y: 0 },
-        speed: 2,
-        clr: color(255, 0, 0),
-    });
-    ghosts.push({
-        col: 13,
-        row: 1,
-        x: cellX(13),
-        y: cellY(1),
-        dir: { x: -1, y: 0 },
-        speed: 2,
-        clr: color(255, 184, 255),
-    });
+    // --- 画面表示 ---
+    // 待機画面
+    function showStartScreen() {
+        drawMap();
+        drawDots();
+        drawPacman();
+        drawScore();
+        textAlign(CENTER);
+        fill("yellow");
+        textSize(40);
+        text("PAC-MAN", width / 2, height / 2 - 30);
+        fill("white");
+        textSize(18);
+        text("SPACE キーでスタート", width / 2, height / 2 + 20);
+    }
 
-    score = 0;
-}
+    // プレイ画面
+    function playGame() {
+        updatePacman();
+        updateGhosts();
+        checkEatDots();
+        checkHitGhost();
+        checkClear();
+        drawMap();
+        drawDots();
+        drawPacman();
+        drawGhosts();
+        drawScore();
+    }
 
-// マップを表示する (02)
-function drawMap() {
-    noStroke();
-    for (let r = 0; r < map.length; r++) {
-        for (let c = 0; c < map[r].length; c++) {
-            if (map[r][c] == 1) {
-                fill(0, 0, 180);
-                rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+    // 負け画面
+    function showGameOver() {
+        drawMap();
+        drawDots();
+        drawPacman();
+        drawGhosts();
+        drawScore();
+        textAlign(CENTER);
+        fill("red");
+        textSize(40);
+        text("GAME OVER", width / 2, height / 2);
+        fill("white");
+        textSize(18);
+        text("SPACE キーでタイトルへ", width / 2, height / 2 + 50);
+    }
+
+    // 勝利画面
+    function showClearScreen() {
+        drawMap();
+        drawDots();
+        drawPacman();
+        drawScore();
+        textAlign(CENTER);
+        fill("yellow");
+        textSize(40);
+        text("STAGE CLEAR!", width / 2, height / 2);
+        fill("white");
+        textSize(18);
+        text("SPACE キーでタイトルへ", width / 2, height / 2 + 50);
+    }
+
+    // --- ゲームの初期化の設定 ---
+    function initGame() {
+        // mapの2次元配列からdotsの2次元配列を生成する
+        dots = [];
+        for (let r = 0; r < map.length; r++) {
+            dots.push([]);
+            for (let c = 0; c < map[r].length; c++) {
+                // 端のトンネルマスにはドットを置かない
+                let isBorder =
+                    r == 0 ||
+                    r == map.length - 1 ||
+                    c == 0 ||
+                    c == map[r].length - 1;
+                dots[r].push(map[r][c] == 0 && !isBorder);
+            }
+        }
+
+        // pacmanの初期位置
+        pacman = {
+            col: 7,
+            row: 13, // 向かっているマス（列, 行）
+            x: cellX(7),
+            y: cellY(13), // ピクセル位置
+            dir: { x: 1, y: 0 }, // 現在の進行方向
+            nextDir: { x: 1, y: 0 }, // 次に曲がりたい方向
+            speed: 3,
+            mouthAngle: 0,
+            mouthOpen: true,
+        };
+
+        // ghostの初期位置
+        // ghostsを空にしてから4体追加
+        ghosts = [];
+            // 赤
+            ghosts.push({
+                col: 1,
+                row: 1,
+                x: cellX(1),
+                y: cellY(1),
+                dir: {x:1, y:0},
+                speed: 3,
+                clr: color(255, 0, 0),
+                type: "red"
+            });
+            // ピンク
+            ghosts.push({
+                col: 13,
+                row: 1,
+                x: cellX(13),
+                y: cellY(1),
+                dir: {x:-1, y:0},
+                speed: 3,
+                clr: color(255, 184, 255),
+                type: "pink"
+            });
+            // 水色
+            ghosts.push({
+                col: 1,
+                row: 13,
+                x: cellX(1),
+                y: cellY(13),
+                dir: {x:1, y:0},
+                speed: 3,
+                clr: color(0, 255, 255),
+                type: "cyan"
+            });
+            // オレンジ
+            ghosts.push({
+                col: 13,
+                row: 13,
+                x: cellX(13),
+                y: cellY(13),
+                dir: {x:-1, y:0},
+                speed: 3,
+                clr: color(255, 184, 82),
+                type: "orange"
+            });
+
+        // scoreのリセット
+        score = 0;
+    }
+
+    // マップを表示する (02)
+    function drawMap() {
+        noStroke();
+        for (let r = 0; r < map.length; r++) {
+            for (let c = 0; c < map[r].length; c++) {
+                if (map[r][c] == 1) {
+                    fill(0, 0, 180);
+                    rect(c * CELL_SIZE, r * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                }
             }
         }
     }
-}
 
-// ドットを表示する (03)
-function drawDots() {
-    fill(255);
-    noStroke();
-    for (let r = 0; r < dots.length; r++) {
-        for (let c = 0; c < dots[r].length; c++) {
-            if (dots[r][c]) {
-                circle(cellX(c), cellY(r), 8);
+    // ドットを表示する (03)
+    function drawDots() {
+        fill(255);
+        noStroke();
+        for (let r = 0; r < dots.length; r++) {
+            for (let c = 0; c < dots[r].length; c++) {
+                if (dots[r][c]) {
+                    circle(cellX(c), cellY(r), 8);
+                }
             }
         }
     }
-}
 
-// ドットを食べる判定 (04)
-function checkEatDots() {
-    // ピクセル位置からマスの番号を計算する
-    let c = floor(pacman.x / CELL_SIZE);
-    let r = floor(pacman.y / CELL_SIZE);
+    // ドットを食べる判定 (04)
+    function checkEatDots() {
+        // ピクセル位置からマスの番号を計算する
+        let c = floor(pacman.x / CELL_SIZE);
+        let r = floor(pacman.y / CELL_SIZE);
 
-    // ワープ中はキャンバス外になるためチェックをスキップする
-    if (r < 0 || r >= dots.length || c < 0 || c >= dots[r].length) return;
-
-    if (dots[r][c]) {
-        dots[r][c] = false;
-        score += 10;
-    }
-}
-
-// ゴーストとの当たり判定 (05)
-function checkHitGhost() {
-    for (let i = 0; i < ghosts.length; i++) {
-        let d = dist(pacman.x, pacman.y, ghosts[i].x, ghosts[i].y);
-        if (d < CELL_SIZE) {
-            mode = 2;
+        // ワープ中はキャンバス外になるためチェックをスキップする
+        if (r < 0 || r >= dots.length || c < 0 || c >= dots[r].length) return;
+        if (dots[r][c]) {
+            dots[r][c] = false;
+            score += 10;
         }
     }
-}
 
-// 全部食べたか確認する (06)
-function checkClear() {
-    let remaining = 0;
-    for (let r = 0; r < dots.length; r++) {
-        for (let c = 0; c < dots[r].length; c++) {
-            if (dots[r][c]) {
-                remaining = remaining + 1;
+    // ゴーストに当たったか (05)
+    function checkHitGhost() {
+        for (let i = 0; i < ghosts.length; i++) {
+            let d = dist(pacman.x, pacman.y, ghosts[i].x, ghosts[i].y);
+            if (d < CELL_SIZE) {
+                mode = 2;
             }
         }
     }
-    if (remaining == 0) {
-        mode = 3;
-    }
-}
-// パックマンを表示する
-function drawPacman() {
-    pacman_shape(
-        pacman.x,
-        pacman.y,
-        CELL_SIZE / 2 - 2,
-        pacman.mouthAngle,
-        pacman.dir,
-    );
-}
 
-// パックマンをマスに沿って動かす
-function updatePacman() {
-    let tx = cellX(pacman.col);
-    let ty = cellY(pacman.row);
-
-    // 目標マスの中心に到達したら次の行き先を決める
-    if (pacman.x == tx && pacman.y == ty) {
-        // nextDir に曲がれるか確認する
-        let nc = pacman.col + pacman.nextDir.x;
-        let nr = pacman.row + pacman.nextDir.y;
-        if (isPath(nc, nr)) {
-            pacman.dir = { x: pacman.nextDir.x, y: pacman.nextDir.y };
-        }
-        // 現在の方向に進めるなら、次のマスを目標にセットする
-        let fc = pacman.col + pacman.dir.x;
-        let fr = pacman.row + pacman.dir.y;
-        if (isPath(fc, fr)) {
-            // ワープ: 端を超えたら反対側へ
-            let wc = wrapCol(fc);
-            let wr = wrapRow(fr);
-            if (wc != fc || wr != fr) {
-                // ピクセル位置をトンネルの入口にテレポートする
-                pacman.x = cellX(wc) - pacman.dir.x * CELL_SIZE;
-                pacman.y = cellY(wr) - pacman.dir.y * CELL_SIZE;
+    // 全部食べたか (06)
+    function checkClear() {
+        let remaining = 0;
+        for (let r = 0; r < dots.length; r++) {
+            for (let c = 0; c < dots[r].length; c++) {
+                if (dots[r][c]) {
+                    remaining = remaining + 1;
+                }
             }
-            pacman.col = wc;
-            pacman.row = wr;
+        }
+        if (remaining == 0) {
+            mode = 3;
         }
     }
 
-    // 目標マスの中心に向かってピクセル移動する
-    tx = cellX(pacman.col);
-    ty = cellY(pacman.row);
-    if (pacman.x < tx) pacman.x = min(pacman.x + pacman.speed, tx);
-    else if (pacman.x > tx) pacman.x = max(pacman.x - pacman.speed, tx);
-    if (pacman.y < ty) pacman.y = min(pacman.y + pacman.speed, ty);
-    else if (pacman.y > ty) pacman.y = max(pacman.y - pacman.speed, ty);
-
-    // 口の開閉アニメーション
-    if (pacman.mouthOpen) {
-        pacman.mouthAngle += 5;
-        if (pacman.mouthAngle >= 30) pacman.mouthOpen = false;
-    } else {
-        pacman.mouthAngle -= 5;
-        if (pacman.mouthAngle <= 0) pacman.mouthOpen = true;
+    // パックマンを表示する
+    function drawPacman() {
+        pacman_shape(
+            pacman.x,
+            pacman.y,
+            CELL_SIZE / 2 - 2,
+            pacman.mouthAngle,
+            pacman.dir,
+        );
     }
-}
 
-// 進む方向を変える
-function changeDirection() {
-    if (keyCode == LEFT_ARROW) pacman.nextDir = { x: -1, y: 0 };
-    if (keyCode == RIGHT_ARROW) pacman.nextDir = { x: 1, y: 0 };
-    if (keyCode == UP_ARROW) pacman.nextDir = { x: 0, y: -1 };
-    if (keyCode == DOWN_ARROW) pacman.nextDir = { x: 0, y: 1 };
-}
+    // パックマンをマスに沿って動かす
+    function updatePacman() {
+        let tx = cellX(pacman.col);
+        let ty = cellY(pacman.row);
 
-// ゴーストを表示する
-function drawGhosts() {
-    for (let i = 0; i < ghosts.length; i++) {
-        ghost_shape(ghosts[i].x, ghosts[i].y, CELL_SIZE / 2 - 2, ghosts[i].clr);
+        // 目標マスの中心に到達したら次の行き先を決める
+        if (pacman.x == tx && pacman.y == ty) {
+            // nextDir に曲がれるか確認する
+            let nc = pacman.col + pacman.nextDir.x;
+            let nr = pacman.row + pacman.nextDir.y;
+            if (isPath(nc, nr)) {
+                pacman.dir = { x: pacman.nextDir.x, y: pacman.nextDir.y };
+            }
+            // 現在の方向に進めるなら、次のマスを目標にセットする
+            let fc = pacman.col + pacman.dir.x;
+            let fr = pacman.row + pacman.dir.y;
+            if (isPath(fc, fr)) {
+                // ワープ: 端を超えたら反対側へ
+                let wc = wrapCol(fc);
+                let wr = wrapRow(fr);
+                if (wc != fc || wr != fr) {
+                    // ピクセル位置をトンネルの入口にテレポートする
+                    pacman.x = cellX(wc) - pacman.dir.x * CELL_SIZE;
+                    pacman.y = cellY(wr) - pacman.dir.y * CELL_SIZE;
+                }
+                pacman.col = wc;
+                pacman.row = wr;
+            }
+        }
+
+        // 目標マスの中心に向かってピクセル移動する
+        tx = cellX(pacman.col);
+        ty = cellY(pacman.row);
+        if (pacman.x < tx) pacman.x = min(pacman.x + pacman.speed, tx);
+        else if (pacman.x > tx) pacman.x = max(pacman.x - pacman.speed, tx);
+        if (pacman.y < ty) pacman.y = min(pacman.y + pacman.speed, ty);
+        else if (pacman.y > ty) pacman.y = max(pacman.y - pacman.speed, ty);
+
+        // 口の開閉アニメーション
+        if (pacman.mouthOpen) {
+            pacman.mouthAngle += 5;
+            if (pacman.mouthAngle >= 30) pacman.mouthOpen = false;
+        } else {
+            pacman.mouthAngle -= 5;
+            if (pacman.mouthAngle <= 0) pacman.mouthOpen = true;
+        }
     }
-}
 
-// ゴーストをマスに沿ってランダムに動かす
-function updateGhosts() {
+    // 進む方向を変える
+    function changeDirection() {
+        if (keyCode == LEFT_ARROW || key == 'a') pacman.nextDir = { x: -1, y: 0 };
+        if (keyCode == RIGHT_ARROW || key == 'd') pacman.nextDir = { x: 1, y: 0 };
+        if (keyCode == UP_ARROW || key == 'w') pacman.nextDir = { x: 0, y: -1 };
+        if (keyCode == DOWN_ARROW || key == 's') pacman.nextDir = { x: 0, y: 1 };
+    }
+
+    // ゴーストを表示する
+    function drawGhosts() {
+        for (let i = 0; i < ghosts.length; i++) {
+            ghost_shape(ghosts[i].x, ghosts[i].y, CELL_SIZE / 2 - 2, ghosts[i].clr);
+        }
+    }
+
+    // ゴーストをマスに沿って動かす
+    function updateGhosts() {
     let allDirs = [
         { x: 1, y: 0 },
         { x: -1, y: 0 },
@@ -323,32 +357,64 @@ function updateGhosts() {
         let tx = cellX(g.col);
         let ty = cellY(g.row);
 
-        // 目標マスの中心に到達したら次の行き先を決める
         if (g.x == tx && g.y == ty) {
-            // 進める方向を集める（逆方向は除く）
             let validDirs = [];
             for (let d = 0; d < allDirs.length; d++) {
-                let isReverse =
-                    allDirs[d].x == -g.dir.x && allDirs[d].y == -g.dir.y;
-                if (
-                    !isReverse &&
-                    isPath(g.col + allDirs[d].x, g.row + allDirs[d].y)
-                ) {
+                let isReverse = allDirs[d].x == -g.dir.x && allDirs[d].y == -g.dir.y;
+                if (!isReverse && isPath(g.col + allDirs[d].x, g.row + allDirs[d].y)) {
                     validDirs.push(allDirs[d]);
                 }
             }
-            // 行き止まりなら逆方向に戻る
+
             if (validDirs.length == 0) {
                 validDirs.push({ x: -g.dir.x, y: -g.dir.y });
             }
-            // ランダムに方向を選んで次のマスをセットする
-            let chosen = validDirs[floor(random(validDirs.length))];
+
+            // 1. 性格に合わせて「目指す場所」を決める
+            let targetCol, targetRow;
+            if (g.type === "red") {
+                targetCol = pacman.col;
+                targetRow = pacman.row;
+            } else if (g.type === "pink") {
+                targetCol = pacman.col + pacman.dir.x * 4;
+                targetRow = pacman.row + pacman.dir.y * 4;
+            } else if (g.type === "orange") {
+                let d = dist(g.col, g.row, pacman.col, pacman.row);
+                if (d > 8) {
+                    targetCol = pacman.col; targetRow = pacman.row;
+                } else {
+                    targetCol = 0; targetRow = 14; 
+                }
+            } else { // 水色など
+                targetCol = pacman.col; targetRow = pacman.row;
+            }
+
+            // 2. 「目指す場所」に一番近づける方向(chosen)を、進める方向(validDirs)の中から選ぶ
+            let chosen = validDirs[0];
+            let minDist = Infinity;
+
+            // 80%の確率で賢く動き、20%はランダム（遊びを持たせる）
+            if (random(1) < 0.8) {
+                for (let d = 0; d < validDirs.length; d++) {
+                    let testCol = g.col + validDirs[d].x;
+                    let testRow = g.row + validDirs[d].y;
+                    let d2t = dist(testCol, testRow, targetCol, targetRow);
+                    if (d2t < minDist) {
+                        minDist = d2t;
+                        chosen = validDirs[d];
+                    }
+                }
+            } else {
+                chosen = validDirs[floor(random(validDirs.length))];
+            }
+
+            // 3. 決定した方向で移動
             g.dir = chosen;
             let gc = g.col + chosen.x;
             let gr = g.row + chosen.y;
-            // ワープ: 端を超えたら反対側へ
             let wc = wrapCol(gc);
             let wr = wrapRow(gr);
+
             if (wc != gc || wr != gr) {
                 g.x = cellX(wc) - chosen.x * CELL_SIZE;
                 g.y = cellY(wr) - chosen.y * CELL_SIZE;
@@ -357,7 +423,7 @@ function updateGhosts() {
             g.row = wr;
         }
 
-        // 目標マスの中心に向かってピクセル移動する
+        // ピクセル移動処理
         tx = cellX(g.col);
         ty = cellY(g.row);
         if (g.x < tx) g.x = min(g.x + g.speed, tx);
@@ -367,68 +433,68 @@ function updateGhosts() {
     }
 }
 
-// スコアを表示する
-function drawScore() {
-    noStroke();
-    fill("white");
-    textAlign(LEFT);
-    textSize(16);
-    text("SCORE: " + score, 10, 25);
-}
+    // スコアを表示する
+    function drawScore() {
+        noStroke();
+        fill("white");
+        textAlign(LEFT);
+        textSize(16);
+        text("SCORE: " + score, 10, 25);
+    }
 
-// マスの列番号 → X座標（マス中心）
-function cellX(col) {
-    return col * CELL_SIZE + CELL_SIZE / 2;
-}
+    // マスの列番号 → X座標（マス中心）
+    function cellX(col) {
+        return col * CELL_SIZE + CELL_SIZE / 2;
+    }
 
-// マスの行番号 → Y座標（マス中心）
-function cellY(row) {
-    return row * CELL_SIZE + CELL_SIZE / 2;
-}
+    // マスの行番号 → Y座標（マス中心）
+    function cellY(row) {
+        return row * CELL_SIZE + CELL_SIZE / 2;
+    }
 
-// 指定のマスが通路かどうかを返す（端は反対側へワープして判定）
-function isPath(col, row) {
-    let c = wrapCol(col);
-    let r = wrapRow(row);
-    return map[r][c] == 0;
-}
+    // 指定のマスが通路かどうかを返す（端は反対側へワープして判定）
+    function isPath(col, row) {
+        let c = wrapCol(col);
+        let r = wrapRow(row);
+        return map[r][c] == 0;
+    }
 
-// 列番号を端でワープさせる
-function wrapCol(col) {
-    return ((col % map[0].length) + map[0].length) % map[0].length;
-}
+    // 列番号を端でワープさせる
+    function wrapCol(col) {
+        return ((col % map[0].length) + map[0].length) % map[0].length;
+    }
 
-// 行番号を端でワープさせる
-function wrapRow(row) {
-    return ((row % map.length) + map.length) % map.length;
-}
+    // 行番号を端でワープさせる
+    function wrapRow(row) {
+        return ((row % map.length) + map.length) % map.length;
+    }
 
-// ============================================================
-// 図形を描く関数
-// ============================================================
+    // ============================================================
+    // 図形を描く関数
+    // ============================================================
 
-function pacman_shape(x, y, radius, mouthAngle, dir) {
-    push();
-    translate(x, y);
-    rotate(atan2(dir.y, dir.x));
-    noStroke();
-    fill("yellow");
-    arc(0, 0, radius * 2, radius * 2, mouthAngle, 360 - mouthAngle, PIE);
-    pop();
-}
+    function pacman_shape(x, y, radius, mouthAngle, dir) {
+        push();
+        translate(x, y);
+        rotate(atan2(dir.y, dir.x));
+        noStroke();
+        fill("yellow");
+        arc(0, 0, radius * 2, radius * 2, mouthAngle, 360 - mouthAngle, PIE);
+        pop();
+    }
 
-function ghost_shape(x, y, radius, clr) {
-    push();
-    translate(x, y);
-    noStroke();
-    fill(clr);
-    arc(0, 0, radius * 2, radius * 2, 180, 360);
-    rect(-radius, 0, radius * 2, radius);
-    fill("white");
-    ellipse(-radius * 0.35, -radius * 0.1, radius * 0.5, radius * 0.65);
-    ellipse(radius * 0.35, -radius * 0.1, radius * 0.5, radius * 0.65);
-    fill("black");
-    ellipse(-radius * 0.3, -radius * 0.05, radius * 0.25, radius * 0.35);
-    ellipse(radius * 0.4, -radius * 0.05, radius * 0.25, radius * 0.35);
-    pop();
-}
+    function ghost_shape(x, y, radius, clr) {
+        push();
+        translate(x, y);
+        noStroke();
+        fill(clr);
+        arc(0, 0, radius * 2, radius * 2, 180, 360);
+        rect(-radius, 0, radius * 2, radius);
+        fill("white");
+        ellipse(-radius * 0.35, -radius * 0.1, radius * 0.5, radius * 0.65);
+        ellipse(radius * 0.35, -radius * 0.1, radius * 0.5, radius * 0.65);
+        fill("black");
+        ellipse(-radius * 0.3, -radius * 0.05, radius * 0.25, radius * 0.35);
+        ellipse(radius * 0.4, -radius * 0.05, radius * 0.25, radius * 0.35);
+        pop();
+    }
