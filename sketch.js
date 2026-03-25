@@ -1,25 +1,27 @@
     // --- 変数の宣言 ---
     let mode = 0; // 0: スタート, 1: プレイ中, 2: ゲームオーバー, 3: クリア
-    let CELL_SIZE = 60; // 1マスのピクセルサイズ
+    let CELL_SIZE = 40; // 1マスのピクセルサイズ
+    let powerTime = 7; //パワーエサの継続秒
+    let powerTimer = 0;
 
     // マップの2次元配列: 1=壁, 0=通路（ドットあり）
-    let map = [
-        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-        [1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
-        [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-        [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
-    ];
+let map = [
+  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+  [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+  [1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+  [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+  [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1],
+  [1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1],
+  [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+  [1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 1],
+  [1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1],
+  [1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1],
+];  
 
     let pacman;
     let ghosts = [];
@@ -28,7 +30,9 @@
 
     // --- 初期化 ---
     function setup() {
-        createCanvas(900, 900);
+        let CanvasH = map.length * CELL_SIZE
+        let canvasW = map[0].length * CELL_SIZE
+        createCanvas(canvasW, CanvasH)
         angleMode(DEGREES);
         initGame();
     }
@@ -89,6 +93,12 @@
         drawPacman();
         drawGhosts();
         drawScore();
+        if (powerTimer > 0) {
+            powerTimer--;
+            pacman.speed = CELL_SIZE / 20 * 1.5
+        } else {
+            pacman.speed = CELL_SIZE / 20
+        }
     }
 
     // 負け画面
@@ -141,13 +151,13 @@
 
         // pacmanの初期位置
         pacman = {
-            col: 7,
-            row: 13, // 向かっているマス（列, 行）
+            col: 8,
+            row: 8, // 向かっているマス（列, 行）
             x: cellX(7),
-            y: cellY(13), // ピクセル位置
+            y: cellY(8), // ピクセル位置
             dir: { x: 1, y: 0 }, // 現在の進行方向
             nextDir: { x: 1, y: 0 }, // 次に曲がりたい方向
-            speed: 3,
+            speed: CELL_SIZE / 20,
             mouthAngle: 0,
             mouthOpen: true,
         };
@@ -155,6 +165,8 @@
         // ghostの初期位置
         // ghostsを空にしてから4体追加
         ghosts = [];
+        let endD = map.length - 2
+        let endR = map[0].length - 2
             // 赤
             ghosts.push({
                 col: 1,
@@ -162,40 +174,40 @@
                 x: cellX(1),
                 y: cellY(1),
                 dir: {x:1, y:0},
-                speed: 3,
+                speed: CELL_SIZE / 20,
                 clr: color(255, 0, 0),
                 type: "red"
             });
             // ピンク
             ghosts.push({
-                col: 13,
+                col: endR,
                 row: 1,
-                x: cellX(13),
+                x: cellX(endR),
                 y: cellY(1),
                 dir: {x:-1, y:0},
-                speed: 3,
+                speed: CELL_SIZE / 20,
                 clr: color(255, 184, 255),
                 type: "pink"
             });
             // 水色
             ghosts.push({
                 col: 1,
-                row: 13,
+                row: endD,
                 x: cellX(1),
-                y: cellY(13),
+                y: cellY(endD),
                 dir: {x:1, y:0},
-                speed: 3,
+                speed: CELL_SIZE / 20,
                 clr: color(0, 255, 255),
                 type: "cyan"
             });
             // オレンジ
             ghosts.push({
-                col: 13,
-                row: 13,
-                x: cellX(13),
-                y: cellY(13),
+                col: endR,
+                row: endD,
+                x: cellX(endR),
+                y: cellY(endD),
                 dir: {x:-1, y:0},
-                speed: 3,
+                speed: CELL_SIZE / 20,
                 clr: color(255, 184, 82),
                 type: "orange"
             });
@@ -219,12 +231,23 @@
 
     // ドットを表示する (03)
     function drawDots() {
-        fill(255);
-        noStroke();
         for (let r = 0; r < dots.length; r++) {
             for (let c = 0; c < dots[r].length; c++) {
+                // ドットがまだ食べられていない（true）ときだけ描画する
                 if (dots[r][c]) {
-                    circle(cellX(c), cellY(r), 8);
+                    noStroke();
+                    
+                    if (map[r][c] == 2) {
+                        // --- パワーエサの描画 ---
+                        // 目立つようにピンク色で大きく、少し点滅させる
+                        fill(255, 184, 174);
+                        let s = 20 + sin(frameCount * 10) * 5; // ふわふわ動く演出
+                        circle(cellX(c), cellY(r), s);
+                    } else {
+                        // --- 普通のドットの描画 ---
+                        fill(255);
+                        circle(cellX(c), cellY(r), 8);
+                    }
                 }
             }
         }
@@ -235,21 +258,46 @@
         // ピクセル位置からマスの番号を計算する
         let c = floor(pacman.x / CELL_SIZE);
         let r = floor(pacman.y / CELL_SIZE);
-
         // ワープ中はキャンバス外になるためチェックをスキップする
         if (r < 0 || r >= dots.length || c < 0 || c >= dots[r].length) return;
         if (dots[r][c]) {
             dots[r][c] = false;
             score += 10;
         }
+
+        // パワーエサだったら
+        if (map[r][c] == 2){
+            powerTimer = 60 * powerTime;
+            score += 40
+        }
     }
 
     // ゴーストに当たったか (05)
     function checkHitGhost() {
         for (let i = 0; i < ghosts.length; i++) {
-            let d = dist(pacman.x, pacman.y, ghosts[i].x, ghosts[i].y);
-            if (d < CELL_SIZE) {
-                mode = 2;
+            let g = ghosts[i];
+            let d = dist(pacman.x, pacman.y, g.x, g.y);
+
+            if (d < CELL_SIZE * 0.8) { // 当たり判定
+                if (powerTimer > 0) {
+                    // --- パックマンが無敵の時：ゴーストを倒す ---
+                    score += 100;
+                    
+                    // ゴーストをそれぞれの初期位置（四隅）へリセット
+                    // setupで決めたルール（1, 1 など）に合わせて戻す
+                    if (g.type === "red") { g.col = 1; g.row = 1; }
+                    else if (g.type === "pink") { g.col = map[0].length - 2; g.row = 1; }
+                    else if (g.type === "cyan") { g.col = 1; g.row = map.length - 2; }
+                    else if (g.type === "orange") { g.col = map[0].length - 2; g.row = map.length - 2; }
+                    
+                    // ピクセル位置も瞬時に更新
+                    g.x = cellX(g.col);
+                    g.y = cellY(g.row);
+                    
+                } else {
+                    // --- 通常時：ゲームオーバー ---
+                    mode = 2;
+                }
             }
         }
     }
@@ -339,7 +387,19 @@
     // ゴーストを表示する
     function drawGhosts() {
         for (let i = 0; i < ghosts.length; i++) {
-            ghost_shape(ghosts[i].x, ghosts[i].y, CELL_SIZE / 2 - 2, ghosts[i].clr);
+            let g = ghosts[i];
+            let displayColor = g.clr;
+
+            if (powerTimer > 0) {
+                // 終了2秒前（120フレーム）から白と青で点滅
+                if (powerTimer < 120 && frameCount % 20 < 10) {
+                    displayColor = color(255); // 白
+                } else {
+                    displayColor = color(0, 0, 255); // 弱気な青
+                }
+            }
+            // 5番目の引数に目を向けるための「g.dir」を忘れずに！
+            ghost_shape(g.x, g.y, CELL_SIZE / 2 - 2, displayColor, g.dir);
         }
     }
 
@@ -371,23 +431,31 @@
             }
 
             // 1. 性格に合わせて「目指す場所」を決める
+            // 1. 性格に合わせて「目指す場所」を決める
             let targetCol, targetRow;
-            if (g.type === "red") {
-                targetCol = pacman.col;
-                targetRow = pacman.row;
-            } else if (g.type === "pink") {
-                targetCol = pacman.col + pacman.dir.x * 4;
-                targetRow = pacman.row + pacman.dir.y * 4;
-            } else if (g.type === "orange") {
-                let d = dist(g.col, g.row, pacman.col, pacman.row);
-                if (d > 8) {
-                    targetCol = pacman.col; targetRow = pacman.row;
+                if (powerTimer > 0) {
+                    // 【追加：逃走モード】パックマンから一番遠いカドを目指す
+                    targetCol = map[0].length - pacman.col;
+                    targetRow = map.length - pacman.row;
                 } else {
-                    targetCol = 0; targetRow = 14; 
+                    // 【通常モード】いつものロジック
+                    if (g.type === "red") {
+                        targetCol = pacman.col;
+                        targetRow = pacman.row;
+                    } else if (g.type === "pink") {
+                        targetCol = pacman.col + pacman.dir.x * 4;
+                        targetRow = pacman.row + pacman.dir.y * 4;
+                    } else if (g.type === "orange") {
+                        let d = dist(g.col, g.row, pacman.col, pacman.row);
+                        if (d > 8) {
+                            targetCol = pacman.col; targetRow = pacman.row;
+                        } else {
+                            targetCol = 0; targetRow = 14; 
+                        }
+                    } else {
+                        targetCol = pacman.col; targetRow = pacman.row;
+                    }
                 }
-            } else { // 水色など
-                targetCol = pacman.col; targetRow = pacman.row;
-            }
 
             // 2. 「目指す場所」に一番近づける方向(chosen)を、進める方向(validDirs)の中から選ぶ
             let chosen = validDirs[0];
@@ -453,10 +521,12 @@
     }
 
     // 指定のマスが通路かどうかを返す（端は反対側へワープして判定）
+    // 指定のマスが通路（またはパワーエサ）かどうかを返す
     function isPath(col, row) {
         let c = wrapCol(col);
         let r = wrapRow(row);
-        return map[r][c] == 0;
+        // map[r][c] が 0（道） または 2（パワーエサ） なら true を返す
+        return map[r][c] == 0 || map[r][c] == 2;
     }
 
     // 列番号を端でワープさせる
@@ -483,18 +553,28 @@
         pop();
     }
 
-    function ghost_shape(x, y, radius, clr) {
+    function ghost_shape(x, y, radius, clr, dir) {
         push();
         translate(x, y);
         noStroke();
+        // 体の描画
         fill(clr);
         arc(0, 0, radius * 2, radius * 2, 180, 360);
         rect(-radius, 0, radius * 2, radius);
+        // 目の白い部分（固定）
         fill("white");
         ellipse(-radius * 0.35, -radius * 0.1, radius * 0.5, radius * 0.65);
         ellipse(radius * 0.35, -radius * 0.1, radius * 0.5, radius * 0.65);
+        // --- 黒目の位置計算 ---
+        // dir.x や dir.y が 1 ならプラス方向、-1 ならマイナス方向に黒目をずらす
+        let eyeOffsetX = dir.x * radius * 0.15;
+        let eyeOffsetY = dir.y * radius * 0.15;
+        
         fill("black");
-        ellipse(-radius * 0.3, -radius * 0.05, radius * 0.25, radius * 0.35);
-        ellipse(radius * 0.4, -radius * 0.05, radius * 0.25, radius * 0.35);
+        // 左の黒目
+        ellipse(-radius * 0.35 + eyeOffsetX, -radius * 0.1 + eyeOffsetY, radius * 0.25, radius * 0.35);
+        // 右の黒目
+        ellipse(radius * 0.35 + eyeOffsetX, -radius * 0.1 + eyeOffsetY, radius * 0.25, radius * 0.35);
+        
         pop();
     }
