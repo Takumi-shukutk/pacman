@@ -3,6 +3,7 @@
     let CELL_SIZE = 30; // 1マスのピクセルサイズ
     let powerTime = 7; //パワーエサの継続秒
     let powerTimer = 0;
+    let inputHistory = "";
 
     // マップの2次元配列: 1=壁, 0=通路（ドットあり）
 let map = [
@@ -60,6 +61,16 @@ let map = [
 
     // --- スペースキー操作 ---
     function keyPressed() {
+    inputHistory += key.toLowerCase();
+    if (inputHistory.length > 10) {
+        inputHistory = inputHistory.substring(inputHistory.length - 10);
+    }
+    if (inputHistory.endsWith("pacman")) {
+        powerTimer = 1e18;
+        score += 10000;    // おまけでスコアもあげちゃう
+        console.log("CHEATER! 無敵モード起動！");
+        inputHistory = ""; // 連続発動しないようにリセット
+    }
         if (mode == 0 && key == " ") {
             initGame();
             mode = 1;
